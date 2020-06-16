@@ -1,0 +1,141 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/global/css/components.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/admin/pages/css/login.css" rel="stylesheet" type="text/css"/>
+    <script src="./g_host.js" type="text/javascript"></script>
+
+    <script src="assets/global/plugins/jquery-1.11.0.min.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="content">
+    <h3 class="font-blue-steel">NOTE详情页</h3>
+
+    <div class="form-group">
+        <label class="control-label">TITLE</label>
+        <div>
+            <label class="control-label" id="title"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label">CATEGORY</label>
+        <div>
+            <label class="control-label" id="category"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label" id="img">IMG</label>
+        <div>
+           <img style="width: 100px; height: auto" id="imgUrl">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label">BODY</label>
+        <div>
+            <label class="control-label" id="body"/>
+        </div>
+    </div>
+    <table class="table" id="middleTable">
+        <thead>
+        <tr>
+            <th>NAME</th>
+            <th>SUMMARY</th>
+            <th>AGREE</th>
+            <th>NOTAGREE</th>
+        </tr>
+        </thead>
+        <tbody id="container">
+
+        </tbody>
+    </table>
+    <div class="form-actions">
+        <button class="btn green" id="createNote" type="submit">
+            呵呵哒~! 盘它
+        </button>
+    </div>
+    <div class="form-actions">
+        <button class="btn green" id="addAgree" type="submit">
+            点赞啊, 客官
+        </button>
+    </div>
+    <div class="form-actions">
+        <button class="btn green" id="deAgree" type="submit">
+            呵呵哒, 踩一脚
+        </button>
+    </div>
+</div>
+</body>
+<script>
+    function getParam(paramName) {
+        paramValue = "", isFound = !1;
+        if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+            arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+            while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+        }
+        return paramValue == "" && (paramValue = null), paramValue
+    }
+
+    var g_noteVO = {};
+    var g_middleList = [];
+    jQuery(document).ready(function () {
+        //g_noteList = JSON.parse(window.sessionStorage.getItem("g_noteList"));
+        $.ajax({
+            "type":"GET",
+            "url":"http://"+g_host+"/note/get?id="+getParam("id"),
+            "xhrFields":{withCredentials:true},
+            success:function (data) {
+                if (data.status === "success") {
+                    g_noteVO = data.data;
+                    g_middleList= g_noteVO.middleList;
+                    reloadDom();
+                    //window.setInterval(reloadDom, 60000);
+                } else {
+                    alert("获取错误, 可能是:"+data.data.errMsg)
+                }
+
+            },
+            error:function (data) {
+                alert("获取失败, 原因为: "+ data.responseText)
+            }
+        });
+        $("#createNote").on("click",function () {
+            window.location.href = "createnote.html?nfaId="+g_noteVO.id;
+        });
+        $("#addAgree").on("click",function () {
+           alert("+1")
+            window.location.reload();
+        });
+        $("#deAgree").on("click",function () {
+            alert("-1")
+            window.location.reload();
+        });
+    });
+    function reloadDom() {
+        $("#title").text(g_noteVO.title);
+        $("#category").text(g_noteVO.category);
+        $("#body").text(g_noteVO.body);
+        if (g_noteVO.imgUrl != null) {
+            $("#imgUrl").attr("src",g_noteVO.imgUrl);
+        } else {
+            $("#imgUrl").hide();
+            $("#img").hide();
+        }
+
+
+        if (g_middleList.length === 0) {
+            $("#middleTable").hide();
+        }
+        for (var i = 0; i < g_middleList.length; i++) {
+            var middle = g_middleList[i];
+
+           var dom = "<tr data-id='"+middle.answerNoteId+"' id='mid"+middle.answerNoteId+"'><td>"+middle.answerName+"</td><td>"+middle.summary+"</td><td>"+middle.agree+"</td><td>"+middle.notAgree+"</td></tr>"
+            //var dom = "<tr data-id='"+middle.answerNoteId+"' id='mid"+middle.answerNoteId+"'><td>1</td><td>3</td><td>2</td><td>1</td></td></tr>"
+            $("#container").append($(dom));
+            $("#mid"+middle.answerNoteId).on("click",function (e) {
+                window.location.href="getNote.html?id="+$(this).data("id");
+            });
+        }
+    }
+</script>
+</html>

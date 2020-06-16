@@ -1,0 +1,58 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/global/css/components.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/admin/pages/css/login.css" rel="stylesheet" type="text/css"/>
+    <script src="./g_host.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/jquery-1.11.0.min.js" type="text/javascript"></script>
+</head>
+<body class="login">
+<div class="content">
+    <h3 class="font-blue-steel">上传文件</h3>
+
+    <div class="form-group">
+        <label class="font-grey-steel">手机号</label>
+        <div>
+            <input id="cert" type="file" />
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn green" id="upload" type="submit">
+            上传文件
+        </button>
+    </div>
+</div>
+</body>
+<script>
+    jQuery(document).ready(function () {
+
+        $("#upload").on("click",function () {
+            var type = "file";          //后台接收时需要的参数名称，自定义即可
+            var id = "cert";            //即input的id，用来寻找值
+            var formData = new FormData();
+            formData.append(type, $("#"+id)[0].files[0]);    //生成一对表单属性
+            $.ajax({
+                type: "POST",           //因为是传输文件，所以必须是post
+                url: 'http://'+g_host+'/matter/uploadImage',         //对应的后台处理类的地址
+                data: formData,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                xhrFields:{withCredentials:true},
+                success:function (data) {
+                    if (data.status == "success") {
+                        alert("恭喜你啊.");
+                    } else {
+                        alert("失败, 原因可能是: "+data.data.errMsg);
+                    }
+                },
+                error:function (data) {
+                    alert("失败, 原因为: "+ data.responseText)
+                }
+            });
+        });
+    });
+</script>
+</html>

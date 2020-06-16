@@ -1,0 +1,110 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/global/css/components.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/admin/pages/css/login.css" rel="stylesheet" type="text/css"/>
+    <script src="./g_host.js" type="text/javascript"></script>
+    <script src="assets/global/plugins/jquery-1.11.0.min.js" type="text/javascript"></script>
+</head>
+<body class="login">
+<div class="content">
+    <h3 class="font-blue-steel">创建帖子</h3>
+
+    <div class="form-group">
+        <label class="font-grey-steel">标题</label>
+        <div>
+            <input class="form-control" type="text" placeholder="title" name="title" id="title"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="font-grey-steel">分类</label>
+        <div>
+            <input class="form-control" type="text" placeholder="高数/英语/大物" name="category" id="category"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="font-grey-steel">问题描述</label>
+        <div>
+            <textarea rows="5" cols="400" class="form-control" type="text" placeholder="问题描述" name="text" id="text">问题描述</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="font-grey-steel">问题图片</label>
+        <div>
+            <input class="form-control" type="file" placeholder="文件" name="file" id="cert"/>
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn green" id="create" type="submit">
+            创建
+        </button>
+    </div>
+</div>
+</body>
+<script>
+    function getParam(paramName) {
+        paramValue = "", isFound = !1;
+        if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+            arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+            while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+        }
+        return paramValue == "" && (paramValue = null), paramValue
+    }
+    jQuery(document).ready(function () {
+        //绑定otp的click事件用于向后端发送获取手机验证码的请求
+        $("#create").on("click",function () {
+            var title = $("#title").val();
+            var category = $("#category").val();
+            var text = $("#text").val();
+            if ( title == null ||title == ""){
+                alert("title不能为空");
+                return false;
+            }
+            if ( category == null ||category == ""){
+                alert("category不能为空");
+                return false;
+            }
+            if ( text == null ||text == ""){
+                alert("text不能为空");
+                return false;
+            }
+            var type = "file";          //后台接收时需要的参数名称，自定义即可
+            var id = "cert";            //即input的id，用来寻找值
+            var formData = new FormData();
+            formData.append(type, $("#"+id)[0].files[0]);
+            formData.append("title",title);
+            formData.append("category",category);
+            formData.append("body",text);
+            //need for assistance
+            var nfaId = getParam("nfaId");
+            alert(nfaId);
+            formData.append("nfaId",nfaId);
+            //生成一对表单属性
+            $.ajax({
+                type: "POST",           //因为是传输文件，所以必须是post
+                url: 'http://'+g_host+'/note/create',         //对应的后台处理类的地址
+                data:formData,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                xhrFields:{withCredentials:true},
+                success:function (data) {
+                    if (data.status == "success") {
+                        alert("创建成功.");
+                        //window.location.href = "listItem.html"
+                    } else {
+                        alert("创建失败, 原因可能是: "+data.data.errMsg);
+                    }
+                },
+                error:function (data) {
+                    alert("创建失败, 原因为: "+ data.responseText)
+                }
+
+            });
+            return false;
+        });
+    })
+</script>
+</html>

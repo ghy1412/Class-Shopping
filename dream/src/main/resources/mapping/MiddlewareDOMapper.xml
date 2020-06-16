@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dreamone.dao.MiddlewareDOMapper">
+  <resultMap id="BaseResultMap" type="com.dreamone.dataobject.MiddlewareDO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="note_id" jdbcType="INTEGER" property="noteId" />
+    <result column="answer_name" jdbcType="VARCHAR" property="answerName" />
+    <result column="answer_note_id" jdbcType="INTEGER" property="answerNoteId" />
+    <result column="agree" jdbcType="INTEGER" property="agree" />
+    <result column="not_agree" jdbcType="INTEGER" property="notAgree" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, note_id, answer_name, answer_note_id, agree, not_agree, summary
+  </sql>
+  <select id="selectByExample" parameterType="com.dreamone.dataobject.MiddlewareDOExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from middleware
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from middleware
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByNoteId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    *
+    from middleware
+    where note_id = #{noteId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from middleware
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.dreamone.dataobject.MiddlewareDO">
+    insert into middleware (id, note_id, answer_name, 
+      answer_note_id, agree, not_agree, 
+      summary)
+    values (#{id,jdbcType=INTEGER}, #{noteId,jdbcType=INTEGER}, #{answerName,jdbcType=VARCHAR}, 
+      #{answerNoteId,jdbcType=INTEGER}, #{agree,jdbcType=INTEGER}, #{notAgree,jdbcType=INTEGER}, 
+      #{summary,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dreamone.dataobject.MiddlewareDO" useGeneratedKeys="true" keyProperty="id">
+    insert into middleware
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="noteId != null">
+        note_id,
+      </if>
+      <if test="answerName != null">
+        answer_name,
+      </if>
+      <if test="answerNoteId != null">
+        answer_note_id,
+      </if>
+      <if test="agree != null">
+        agree,
+      </if>
+      <if test="notAgree != null">
+        not_agree,
+      </if>
+      <if test="summary != null">
+        summary,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="noteId != null">
+        #{noteId,jdbcType=INTEGER},
+      </if>
+      <if test="answerName != null">
+        #{answerName,jdbcType=VARCHAR},
+      </if>
+      <if test="answerNoteId != null">
+        #{answerNoteId,jdbcType=INTEGER},
+      </if>
+      <if test="agree != null">
+        #{agree,jdbcType=INTEGER},
+      </if>
+      <if test="notAgree != null">
+        #{notAgree,jdbcType=INTEGER},
+      </if>
+      <if test="summary != null">
+        #{summary,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dreamone.dataobject.MiddlewareDO">
+    update middleware
+    <set>
+      <if test="noteId != null">
+        note_id = #{noteId,jdbcType=INTEGER},
+      </if>
+      <if test="answerName != null">
+        answer_name = #{answerName,jdbcType=VARCHAR},
+      </if>
+      <if test="answerNoteId != null">
+        answer_note_id = #{answerNoteId,jdbcType=INTEGER},
+      </if>
+      <if test="agree != null">
+        agree = #{agree,jdbcType=INTEGER},
+      </if>
+      <if test="notAgree != null">
+        not_agree = #{notAgree,jdbcType=INTEGER},
+      </if>
+      <if test="summary != null">
+        summary = #{summary,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dreamone.dataobject.MiddlewareDO">
+    update middleware
+    set note_id = #{noteId,jdbcType=INTEGER},
+      answer_name = #{answerName,jdbcType=VARCHAR},
+      answer_note_id = #{answerNoteId,jdbcType=INTEGER},
+      agree = #{agree,jdbcType=INTEGER},
+      not_agree = #{notAgree,jdbcType=INTEGER},
+      summary = #{summary,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
